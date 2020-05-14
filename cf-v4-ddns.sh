@@ -141,7 +141,9 @@ RESPONSE=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$CFZONE_ID
   --data "{\"id\":\"$CFZONE_ID\",\"type\":\"$CFRECORD_TYPE\",\"name\":\"$CFRECORD_NAME\",\"content\":\"$WAN_IP\", \"ttl\":$CFTTL}")
 
 if [ "$RESPONSE" != "${RESPONSE%success*}" ] && [ "$(echo $RESPONSE | grep "\"success\": true")" != "" ]; then
-  curl -s -d "photo=%E5%9F%9F%E5%90%8D$CFRECORD_NAME%E7%9A%84IP%20%20%E6%9B%B4%E6%96%B0%E4%B8%BA%20%20%20$WAN_IP" -X POST https://tgbot.lbyczf.com/sendMessage/$TELEGRAMPUSHBOT_TOKEN
+  if [ -n "$TELEGRAMPUSHBOT_TOKEN" ]; then  
+    curl -s -d "photo=%E5%9F%9F%E5%90%8D$CFRECORD_NAME%E7%9A%84IP%20%20%E6%9B%B4%E6%96%B0%E4%B8%BA%20%20%20$WAN_IP" -X POST https://tgbot.lbyczf.com/sendMessage/$TELEGRAMPUSHBOT_TOKEN
+  fi
   echo "Updated succesfuly!"
   echo $WAN_IP > $WAN_IP_FILE
   exit
