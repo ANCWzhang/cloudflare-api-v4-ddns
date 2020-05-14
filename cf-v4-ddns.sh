@@ -42,6 +42,9 @@ CFRECORD_NAME=
 # Record type, A(IPv4)|AAAA(IPv6), default IPv4
 CFRECORD_TYPE=A
 
+# Telegram Push Notifications https://t.me/notificationme_bot
+TELEGRAMPUSHBOT_TOKEN=
+
 # Cloudflare TTL for record, between 120 and 86400 seconds
 CFTTL=120
 
@@ -138,6 +141,7 @@ RESPONSE=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$CFZONE_ID
   --data "{\"id\":\"$CFZONE_ID\",\"type\":\"$CFRECORD_TYPE\",\"name\":\"$CFRECORD_NAME\",\"content\":\"$WAN_IP\", \"ttl\":$CFTTL}")
 
 if [ "$RESPONSE" != "${RESPONSE%success*}" ] && [ "$(echo $RESPONSE | grep "\"success\": true")" != "" ]; then
+  curl -s -d "photo=%E5%9F%9F%E5%90%8D$CFRECORD_NAME%E7%9A%84IP%20%20%E6%9B%B4%E6%96%B0%E4%B8%BA%20%20%20$WAN_IP" -X POST https://tgbot.lbyczf.com/sendMessage/$TELEGRAMPUSHBOT_TOKEN
   echo "Updated succesfuly!"
   echo $WAN_IP > $WAN_IP_FILE
   exit
