@@ -42,9 +42,6 @@ CFRECORD_NAME=
 # Record type, A(IPv4)|AAAA(IPv6), default IPv4
 CFRECORD_TYPE=A
 
-# Telegram Push Notifications https://t.me/notificationme_bot
-TELEGRAMPUSHBOT_TOKEN=
-
 #Telelgram CHAT_ID,userid or groupid
 CHAT_ID=
 
@@ -146,13 +143,12 @@ RESPONSE=$(curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$CFZONE_ID
   -H "Content-Type: application/json" \
   --data "{\"id\":\"$CFZONE_ID\",\"type\":\"$CFRECORD_TYPE\",\"name\":\"$CFRECORD_NAME\",\"content\":\"$WAN_IP\", \"ttl\":$CFTTL}")
 
-if [ "$RESPONSE" != "${RESPONSE%success*}" ] && [ "$(echo $RESPONSE | grep "\"success\": true")" != "" ]; then
-  if [ -n "$TELEGRAMPUSHBOT_TOKEN" ]; then  
-    curl -s -d "photo=%E5%9F%9F%E5%90%8D$CFRECORD_NAME%E7%9A%84IP%20%20%E6%9B%B4%E6%96%B0%E4%B8%BA%20%20%20$WAN_IP" -X POST https://tgbot.lbyczf.com/sendMessage/$TELEGRAMPUSHBOT_TOKEN
-  fi
+
+if [ "$RESPONSE" != "${RESPONSE%success*}" ] && [ "$(echo $RESPONSE | grep "\"success\":true")" != "" ]; then
   if [[ -n "$CHAT_ID" && -n "$BOT_TOKEN" ]]; then
     curl -s "https://api.telegram.org/bot$BOT_TOKEN/sendMessage?chat_id=$CHAT_ID&text='Domain:$CFRECORD_NAME Updating DNS to $WAN_IP'"
   fi
+
   echo "Updated succesfuly!"
   echo $WAN_IP > $WAN_IP_FILE
   exit
